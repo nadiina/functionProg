@@ -15,49 +15,72 @@
 ### Пункт 1: Створення списку
 ```lisp
 (setq custom-list (list 1 'a (list 'b 'c) ()))
+
+(1 A (B C) NIL)
 ```
 
 ### Пункт 2: Отримання голови списку
 ```lisp
-(print (car custom-list))
+(car custom-list)
+
+1
 ```
 
 ### Пункт 3: Отримання хвоста списку
 ```lisp
-(print (cdr custom-list))
+(cdr custom-list)
+
+(A (B C) NIL) 
 ```
 
 ### Пункт 4: Отримання третього елемента списку
 ```lisp
-(print (nth 2 custom-list))
+(nth 2 custom-list)
+
+(B C) 
 ```
 
 ### Пункт 5: Отримання останнього елемента списку
 ```lisp
-(print (first (last custom-list)))
+(first (last custom-list))
+
+NIL
 ```
 
 ### Пункт 6: Використання ATOM та LISTP
 ```lisp
-(print (atom (car custom-list)))
-(print (atom (nth 2 custom-list)))
-(print (atom (car (last custom-list))))
+(atom (car custom-list))
+(atom (nth 2 custom-list))
+(atom (car (last custom-list)))
+T 
+NIL 
+T 
 
-(print (listp (car custom-list)))
-(print (listp (nth 2 custom-list)))
-(print (listp (car (last custom-list))))
+(listp (car custom-list))
+(listp (nth 2 custom-list))
+(listp (car (last custom-list)))
+NIL 
+T 
+T 
 ```
 
 ### Пункт 7: Використання предикатів(eql, null, numberp)
 ```lisp
-(print (eql (car custom-list) 1))
-(print (null (nth 3 custom-list)))
-(print (numberp (second custom-list)))
+(eql (car custom-list) 1)
+T
+
+(null (nth 3 custom-list))
+T
+
+(numberp (second custom-list))
+NIL
 ```
 
 ### Пункт 8: Об'єднання списків
 ```lisp
-(print (append custom-list (nth 2 custom-list)))
+(append custom-list (nth 2 custom-list))
+
+(1 A (B C) NIL B C)
 ```
 
 ## Варіант 7
