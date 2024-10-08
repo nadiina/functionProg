@@ -27,7 +27,7 @@
 
 ## Варіант **8**
 <!-- Зазначається завдання за варіантом -->
-## Лістинг функції <reverse-and-nest-tail>
+## Лістинг функції compress-list
 ```lisp
 (defun last-element (lst)
   (if (null (cdr lst))
