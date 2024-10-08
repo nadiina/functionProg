@@ -27,7 +27,7 @@
 
 ## Варіант **8**
 <!-- Зазначається завдання за варіантом -->
-## Лістинг функції compress-list
+## Лістинг функції reverse-and-nest-tail
 ```lisp
 (defun last-element (lst)
   (if (null (cdr lst))
@@ -75,7 +75,7 @@ Testing of reverse-and-nest-tail
 3) Empty list: DONE
 4) Single element: DONE
 ```
-## Лістинг функції <назва другої функції>
+## Лістинг функції compress-list
 ```lisp
 (defun compress-helper (lst current count)
   (cond
