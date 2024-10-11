@@ -1,47 +1,24 @@
-(defun last-element (lst)
-  "Отримує останній елемент списку."
-  (if (null (cdr lst))
-      (car lst)
-      (last-element (cdr lst))))
-
-(defun all-but-last (lst)
-  "Повертає всі елементи, крім останнього."
-  (if (null (cdr lst))
-      nil
-      (cons (car lst) (all-but-last (cdr lst)))))
-
-
 (defun reverse-and-nest-tail (lst)
   "Рекурсивна функція, що обертає список і створює вкладену структуру з його елементів."
-  (cond
-    ((null lst) nil)  ;; Якщо список порожній
-    ((null (cdr lst)) (list (car lst)))  ;; Якщо це останній елемент, обгортаємо його в список
-    (t (list (last-element lst) (reverse-and-nest-tail (all-but-last lst))))))  ;; Вкладаємо останній елемент і рекурсивно обробляємо решту
-
-
-(defun compress-helper (lst current count)
-  "Допоміжна функція для compress-list."
-  (cond
-   ;; Якщо список пустий, повертаємо результат
-   ((not lst) (if (> count 0) (cons (cons count current) nil) nil))
-
-   ;; Якщо елемент — це число, використовуємо =, інакше порівнюємо інші типи
-   ((and (numberp current) (numberp (car lst)) (= current (car lst)))
-    (compress-helper (cdr lst) current (+ count 1)))
-
-   ;; Якщо елемент не число, перевіряємо рівність через символи або рядки
-   ((and (symbolp current) (symbolp (car lst)) (string= (symbol-name current) (symbol-name (car lst))))
-    (compress-helper (cdr lst) current (+ count 1)))
-
-   ;; Якщо елементи не рівні, додаємо їх у новий список
-   (t (cons (cons count current) (compress-helper (cdr lst) (car lst) 1)))))
+  (if (null lst)
+      nil
+      (if (null (cdr lst))
+          (list (car lst))
+          (list (car (last lst)) (reverse-and-nest-tail (butlast lst))))))
 
 (defun compress-list (lst)
   "Рекурсивна функція, що заміщає послідовні однакові елементи двоелементними списками (кількість-повторень елемент)."
-  (if (not lst)
+  (if (null lst)
       nil
       (compress-helper (cdr lst) (car lst) 1)))
 
+(defun compress-helper (lst current count)
+  "Допоміжна функція для compress-list, що обробляє список."
+  (cond
+   ((null lst) (list (cons count current)))
+   ((eql current (car lst))
+    (compress-helper (cdr lst) current (+ count 1)))
+   (t (cons (cons count current) (compress-helper (cdr lst) (car lst) 1)))))
 
 (defun run-reverse-nest-test (input expected-result test-description)
   (let ((result (reverse-and-nest-tail input)))

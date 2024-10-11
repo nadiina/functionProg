@@ -26,25 +26,27 @@
 мають бути оформленні у вигляді модульних тестів
 
 ## Варіант **8**
-<!-- Зазначається завдання за варіантом -->
+1. Написати функцію reverse-and-nest-tail , яка обертає вхідний список та утворює
+вкладeну структуру з підсписків з його елементами, починаючи з хвоста:
+```lisp
+CL-USER> (reverse-and-nest-tail '(a b c))
+(C (B (A)))
+```
+2. Написати функцію compress-list , яка заміщає сукупності послідовно
+розташованих однакових елементів списку двоелементними списками виду
+(кількість-повторень елемент):
+```lisp
+CL-USER> (compress-list '(1 a a 3 3 3 b))
+((1 1) (2 A) (3 3) (1 B))
+```
 ## Лістинг функції reverse-and-nest-tail
 ```lisp
-(defun last-element (lst)
-  (if (null (cdr lst))
-      (car lst)
-      (last-element (cdr lst))))
-
-(defun all-but-last (lst)
-  (if (null (cdr lst))
-      nil
-      (cons (car lst) (all-but-last (cdr lst)))))
-
-
 (defun reverse-and-nest-tail (lst)
-  (cond
-    ((null lst) nil)  
-    ((null (cdr lst)) (list (car lst)))  
-    (t (list (last-element lst) (reverse-and-nest-tail (all-but-last lst))))))  
+  (if (null lst)
+      nil
+      (if (null (cdr lst))
+          (list (car lst))
+          (list (car (last lst)) (reverse-and-nest-tail (butlast lst))))))
 ```
 ### Тестові набори
 ```lisp
@@ -54,8 +56,7 @@
   (run-reverse-nest-test '(1 2 3 4 5) '(5 (4 (3 (2 (1))))) "2) Reverse and nest numbers")
   (run-reverse-nest-test '() nil "3) Empty list")
   (run-reverse-nest-test '(x) '(x) "4) Single element")
-  (format t " ~%")
-  )
+  (format t " ~%"))
 ```
 ### Тестування
 ```lisp
@@ -77,22 +78,17 @@ Testing of reverse-and-nest-tail
 ```
 ## Лістинг функції compress-list
 ```lisp
-(defun compress-helper (lst current count)
-  (cond
-   ((not lst) (if (> count 0) (cons (cons count current) nil) nil))
-
-   ((and (numberp current) (numberp (car lst)) (= current (car lst)))
-    (compress-helper (cdr lst) current (+ count 1)))
-
-   ((and (symbolp current) (symbolp (car lst)) (string= (symbol-name current) (symbol-name (car lst))))
-    (compress-helper (cdr lst) current (+ count 1)))
-
-   (t (cons (cons count current) (compress-helper (cdr lst) (car lst) 1)))))
-
 (defun compress-list (lst)
-  (if (not lst)
+  (if (null lst)
       nil
       (compress-helper (cdr lst) (car lst) 1)))
+
+(defun compress-helper (lst current count)
+  (cond
+   ((null lst) (list (cons count current)))
+   ((eql current (car lst))
+    (compress-helper (cdr lst) current (+ count 1)))
+   (t (cons (cons count current) (compress-helper (cdr lst) (car lst) 1)))))
 ```
 ### Тестові набори
 ```lisp
