@@ -1,10 +1,17 @@
 (defun reverse-and-nest-tail (lst)
-  "Рекурсивна функція, що обертає список і створює вкладену структуру з його елементів."
-  (if (null lst)
-      nil
-      (if (null (cdr lst))
-          (list (car lst))
-          (list (car (last lst)) (reverse-and-nest-tail (butlast lst))))))
+  "Рекурсивна функція, що обертає список і створює вкладену структуру з його елементів без використання заборонених функцій."
+  (labels ((helper (lst)
+             (if (null (cdr lst))
+                 (list (car lst))
+                 (list (car lst) (helper (cdr lst)))))
+           (reverse-helper (remaining acc)
+             "Допоміжна функція для реверсування списку."
+             (if (null remaining)
+                 acc  ; Повертаємо накопичувач
+                 (reverse-helper (cdr remaining) (cons (car remaining) acc)))))
+    (if (null lst)
+        nil
+        (helper (reverse-helper lst nil)))))
 
 (defun compress-list (lst)
   "Рекурсивна функція, що заміщає послідовні однакові елементи двоелементними списками (кількість-повторень елемент)."
