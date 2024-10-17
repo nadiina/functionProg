@@ -42,11 +42,18 @@ CL-USER> (compress-list '(1 a a 3 3 3 b))
 ## Лістинг функції reverse-and-nest-tail
 ```lisp
 (defun reverse-and-nest-tail (lst)
-  (if (null lst)
-      nil
-      (if (null (cdr lst))
-          (list (car lst))
-          (list (car (last lst)) (reverse-and-nest-tail (butlast lst))))))
+  (labels ((helper (lst)
+             (if (null (cdr lst))
+                 (list (car lst))
+                 (list (car lst) (helper (cdr lst)))))
+           (reverse-helper (remaining acc)
+             "Допоміжна функція для реверсування списку."
+             (if (null remaining)
+                 acc  
+                 (reverse-helper (cdr remaining) (cons (car remaining) acc)))))
+    (if (null lst)
+        nil
+        (helper (reverse-helper lst nil)))))
 ```
 ### Тестові набори
 ```lisp
