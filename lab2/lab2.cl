@@ -1,5 +1,4 @@
 (defun reverse-and-nest-tail (lst)
-  "Рекурсивна функція, що обертає список і створює вкладену структуру з його елементів без використання заборонених функцій."
   (labels ((helper (lst)
              (if (null (cdr lst))
                  (list (car lst))
@@ -7,7 +6,7 @@
            (reverse-helper (remaining acc)
              "Допоміжна функція для реверсування списку."
              (if (null remaining)
-                 acc  ; Повертаємо накопичувач
+                 acc  
                  (reverse-helper (cdr remaining) (cons (car remaining) acc)))))
     (if (null lst)
         nil
@@ -20,7 +19,6 @@
       (compress-helper (cdr lst) (car lst) 1)))
 
 (defun compress-helper (lst current count)
-  "Допоміжна функція для compress-list, що обробляє список."
   (cond
    ((null lst) (list (cons count current)))
    ((eql current (car lst))
