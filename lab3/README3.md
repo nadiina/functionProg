@@ -32,39 +32,47 @@
 ## Лістинг функції з використанням конструктивного підходу
 ```lisp
 (defun shell-sort-recursive (lst)
-  (let ((gaps (generate-gaps (length lst))))
+  "Функціональне сортування Шелла без використання циклів і псевдофункцій."
+  (let ((gaps (generate-gaps-r (length lst))))
     (labels ((shell-sort-recursive-helper (lst gaps)
-                (if (null gaps)
-                    lst
-                  (let ((gap (car gaps)))
-                    (shell-sort-recursive-helper (shell-sort-helper lst gap) (cdr gaps)))))
+               (if (null gaps)
+                   lst
+                 (let ((gap (car gaps)))
+                   (shell-sort-recursive-helper
+                    (shell-sort-helper lst gap) (cdr gaps)))))
+
+             ;; Допоміжна функція для сортування елементів з певним інтервалом
              (shell-sort-helper (lst gap)
-                "Helper function that performs insertion sort on sublists with a given gap."
-                (let ((sorted-lst lst))
-                  (loop for i from gap below (length lst)
-                        do (setf sorted-lst (insertion-sort-gap sorted-lst i gap)))
-                  sorted-lst))
+               "Функція допомагає сортувати елементи з кроком gap"
+               (labels ((sort-gap-rec (lst i gap)
+                          (if (>= i (length lst))
+                              lst
+                            (sort-gap-rec (insertion-sort-gap lst i gap) (+ i 1) gap))))
+                 (sort-gap-rec lst gap gap)))
+
+             ;; Реалізація вставкового сорту для елементів на відстані gap
              (insertion-sort-gap (lst start gap)
-                "Sorts the elements with a given gap using insertion sort."
-                (let ((elem (nth start lst))
-                      (j start))
-                  (loop while (and (>= j gap) (> (nth (- j gap) lst) elem))
-                        do (setf lst (replace-element lst j (nth (- j gap) lst)))
-                           (setf j (- j gap)))
-                  (replace-element lst j elem)))
+               "Функція виконує вставкове сортування для елементів з кроком gap."
+               (let ((elem (nth start lst)))
+                 (labels ((sort-rec (lst j)
+                            (if (or (< j gap) (<= (nth (- j gap) lst) elem))
+                                (replace-element lst j elem)
+                              (sort-rec (replace-element lst j (nth (- j gap) lst)) (- j gap)))))
+                   (sort-rec lst start))))
+
+             ;; Заміна елемента за індексом на нове значення
              (replace-element (lst index value)
-                "Replaces the element in lst at index with value."
-                (let ((copy (copy-list lst)))
-                  (setf (nth index copy) value)
-                  copy)))
+               "Замінює елемент у списку на заданому індексі."
+               (append (subseq lst 0 index) (list value) (nthcdr (+ 1 index) lst))))
+
       (shell-sort-recursive-helper lst gaps))))
       
-(defun generate-gaps (n)
-  (let ((gaps nil) (h 1))
-    (loop while (< h n)
-       do (push h gaps)
-       (setf h (+ (* h 3) 1)))
-    (reverse gaps)))
+(defun generate-gaps-r (n)
+  (labels ((generate-gaps-rec (h gaps)
+             (if (>= h n)
+                 (reverse gaps)
+               (generate-gaps-rec (+ (* h 3) 1) (cons h gaps)))))
+    (generate-gaps-rec 1 nil)))
 ```
 ### Тестові набори
 ```lisp
