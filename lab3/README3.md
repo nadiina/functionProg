@@ -41,18 +41,14 @@
                    (shell-sort-recursive-helper
                     (shell-sort-helper lst gap) (cdr gaps)))))
 
-             ;; Допоміжна функція для сортування елементів з певним інтервалом
              (shell-sort-helper (lst gap)
-               "Функція допомагає сортувати елементи з кроком gap"
                (labels ((sort-gap-rec (lst i gap)
                           (if (>= i (length lst))
                               lst
                             (sort-gap-rec (insertion-sort-gap lst i gap) (+ i 1) gap))))
                  (sort-gap-rec lst gap gap)))
 
-             ;; Реалізація вставкового сорту для елементів на відстані gap
              (insertion-sort-gap (lst start gap)
-               "Функція виконує вставкове сортування для елементів з кроком gap."
                (let ((elem (nth start lst)))
                  (labels ((sort-rec (lst j)
                             (if (or (< j gap) (<= (nth (- j gap) lst) elem))
@@ -60,7 +56,6 @@
                               (sort-rec (replace-element lst j (nth (- j gap) lst)) (- j gap)))))
                    (sort-rec lst start))))
 
-             ;; Заміна елемента за індексом на нове значення
              (replace-element (lst index value)
                "Замінює елемент у списку на заданому індексі."
                (append (subseq lst 0 index) (list value) (nthcdr (+ 1 index) lst))))
