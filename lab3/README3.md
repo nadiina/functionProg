@@ -31,43 +31,46 @@
 
 ## Лістинг функції з використанням конструктивного підходу
 ```lisp
-(defun shell-sort-recursive (lst)
-  "Функціональне сортування Шелла без використання циклів і псевдофункцій."
-  (let ((gaps (generate-gaps-r (length lst))))
+(defun shell-sort-recursive (lst &key (key #'identity) (test #'<))
+  (let* ((length-lst (length lst))
+         (gaps (generate-gaps-r length-lst)))
     (labels ((shell-sort-recursive-helper (lst gaps)
                (if (null gaps)
                    lst
-                 (let ((gap (car gaps)))
-                   (shell-sort-recursive-helper
-                    (shell-sort-helper lst gap) (cdr gaps)))))
+                   (shell-sort-recursive-helper (shell-sort-helper lst (car gaps) length-lst) (cdr gaps))))
 
-             (shell-sort-helper (lst gap)
-               (labels ((sort-gap-rec (lst i gap)
-                          (if (>= i (length lst))
-                              lst
-                            (sort-gap-rec (insertion-sort-gap lst i gap) (+ i 1) gap))))
-                 (sort-gap-rec lst gap gap)))
+             (shell-sort-helper (lst gap length-lst)
+               (if (>= gap length-lst)
+                   lst
+                   (sort-gap-rec lst 0 gap length-lst)))
+
+             (sort-gap-rec (lst i gap length-lst)
+               (if (>= i length-lst)
+                   lst
+                   (sort-gap-rec (insertion-sort-gap lst i gap) (+ i 1) gap length-lst)))
 
              (insertion-sort-gap (lst start gap)
-               (let ((elem (nth start lst)))
-                 (labels ((sort-rec (lst j)
-                            (if (or (< j gap) (<= (nth (- j gap) lst) elem))
-                                (replace-element lst j elem)
-                              (sort-rec (replace-element lst j (nth (- j gap) lst)) (- j gap)))))
-                   (sort-rec lst start))))
+               (let ((elem (funcall key (nth start lst))))
+                 (sort-rec lst start gap elem)))
 
-             (replace-element (lst index value)
-               "Замінює елемент у списку на заданому індексі."
-               (append (subseq lst 0 index) (list value) (nthcdr (+ 1 index) lst))))
+             (sort-rec (lst j gap elem)
+               (if (or (< j gap) (funcall test (funcall key (nth (- j gap) lst)) elem))
+                   (replace-nth lst j elem)
+                   (sort-rec (replace-nth lst j (nth (- j gap) lst)) (- j gap) gap elem))))
 
       (shell-sort-recursive-helper lst gaps))))
-      
+
+(defun replace-nth (lst index value)
+  (if (zerop index)
+      (cons value (cdr lst))
+      (cons (car lst) (replace-nth (cdr lst) (1- index) value))))
+
 (defun generate-gaps-r (n)
-  (labels ((generate-gaps-rec (h gaps)
-             (if (>= h n)
-                 (reverse gaps)
-               (generate-gaps-rec (+ (* h 3) 1) (cons h gaps)))))
-    (generate-gaps-rec 1 nil)))
+  (let ((gaps nil) (h 1))
+    (loop while (< h n)
+       do (push h gaps)
+       (setf h (+ (* h 3) 1)))
+    (reverse gaps)))
 ```
 ### Тестові набори
 ```lisp
