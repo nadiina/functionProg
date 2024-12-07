@@ -134,6 +134,7 @@ CL-USER> (mapcar (merge-spinning-tuples-fn :shift-step 2)
 ```
 ### Тестові набори та утиліти
 ```lisp
+(defun run-merge-spinning-tuples-test (lists shift-step expected-result test-description)
   (let* ((closure (merge-spinning-tuples-fn :shift-step shift-step))
          (result (apply #'mapcar closure lists)))
     (if (equal result expected-result)
