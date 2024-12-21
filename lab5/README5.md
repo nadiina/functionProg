@@ -80,24 +80,20 @@
                         (:spacecrafts (make-hash-table :test #'equal))
                         (otherwise (error "Unknown key ~A" key)))))
 
-      ;; Populate the hash table from CSV
       (read-csv-to-hash-table file-path hash-table key)
 
       (cond
-       ;; No filters provided
        ((null filters)
         (maphash (lambda (key value)
                    (push value result))
                  hash-table))
 
-       ;; Filters provided
        (t
         (let ((filter-hash (make-hash-table :test #'equal)))
           ;; Build the filter hash table
           (loop for (filter-key filter-value) on filters by #'cddr
                 do (setf (gethash filter-key filter-hash) filter-value))
 
-          ;; Apply filters
           (maphash (lambda (key value)
                      (let ((nested-hash (and (hash-table-p value) value))
                            (matches t))
@@ -113,7 +109,6 @@
                            (push nested-hash result)))))
                    hash-table))))
 
-      ;; Return the filtered results
       (reverse result))))
 
 (defun print-hash-tables (hash-tables)
